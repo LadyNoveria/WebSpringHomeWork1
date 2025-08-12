@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+    id 'io.freefair.lombok' version '8.4'  // Плагин для Lombok
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Lombok для аннотаций (@Getter, @Builder и т. д.)
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // Другие зависимости (если есть)
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["src/main/resources", "public"]  // Включаем папку public
+        }
+    }
+}
