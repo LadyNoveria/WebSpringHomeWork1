@@ -9,6 +9,7 @@ import java.util.Map;
 public class ClientHandler implements Runnable {
 
     private final Socket socket;
+
     public ClientHandler(Socket socket) {
         this.socket = socket;
     }
@@ -23,35 +24,13 @@ public class ClientHandler implements Runnable {
             final var parts = requestLine.split(" ");
 
             if (parts.length != 3) {
-//                returnNotFound(out);
-                try {
-                    out.write((
-                            "HTTP/1.1 404 Not Found\r\n" +
-                                    "Content-Length: 0\r\n" +
-                                    "Connection: invalid request\r\n" +
-                                    "\r\n"
-                    ).getBytes());
-                    out.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                returnNotFound(out);
                 return;
             }
 
             final var path = parts[1];
             if (!Server.validPaths.contains(path)) {
-                //returnNotFound(out);
-                try {
-                    out.write((
-                            "HTTP/1.1 404 Not Found\r\n" +
-                                    "Content-Length: 0\r\n" +
-                                    "Connection: not found path\r\n" +
-                                    "\r\n"
-                    ).getBytes());
-                    out.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                returnNotFound(out);
                 return;
             }
 
@@ -67,19 +46,7 @@ public class ClientHandler implements Runnable {
 
             Map<String, Handler> map = Server.handlers.get(request.getHttpMethod());
             if (map == null || map.get(request.getPath()) == null) {
-                //returnNotFound(out);
-                System.out.println("No handlers for method: " + request.getHttpMethod());
-                try {
-                    out.write((
-                            "HTTP/1.1 404 Not Found\r\n" +
-                                    "Content-Length: 0\r\n" +
-                                    "Connection: no file\r\n" +
-                                    "\r\n"
-                    ).getBytes());
-                    out.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                returnNotFound(out);
                 return;
             }
             try {
@@ -100,7 +67,7 @@ public class ClientHandler implements Runnable {
             out.write((
                     "HTTP/1.1 404 Not Found\r\n" +
                             "Content-Length: 0\r\n" +
-                            "Connection: closeRR\r\n" +
+                            "Connection: close\r\n" +
                             "\r\n"
             ).getBytes());
             out.flush();
